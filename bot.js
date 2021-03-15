@@ -129,16 +129,19 @@ async function wiki(statement, msg) {
   );
 
   let snippet = await wikiRequest.json();
-
+  console.log(snippet);
   let parsedSnippet =
     snippet.data.length > 1024
       ? snippet.data.substr(0, 1020) + "..."
       : snippet.data;
 
+  let imageURL =
+    snippet.image === ""
+      ? "//www.dreamstime.com/no-image-available-icon-photo-camera-flat-vector-illustration-image132483097"
+      : snippet.image;
+
   if (snippet.status === "error")
     return msg.channel.send("Try searching for a more accurate term");
-
-  console.log(typeof snippet.data);
 
   let wikiEmbed = new Discord.MessageEmbed({
     color: "#0000FF",
@@ -150,7 +153,7 @@ async function wiki(statement, msg) {
         value: parsedSnippet,
       },
     ],
-    image: { url: "https:" + snippet.image },
+    image: { url: "https:" + imageURL },
   });
 
   msg.channel.send(wikiEmbed);
