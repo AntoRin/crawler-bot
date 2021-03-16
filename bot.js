@@ -16,7 +16,6 @@ client.on("message", checkCommand);
 const commandList = ["poll", "hello", "help", "youtube", "unsplash", "wiki"];
 
 function checkCommand(msg) {
-  console.log(msg.content);
   let message = msg.toString();
   if (message[0] === "!") {
     let messageWords = message.split(" ");
@@ -158,7 +157,7 @@ async function wiki(statement, msg) {
 
   let wikiEmbed = new Discord.MessageEmbed({
     color: "#0000FF",
-    title: statement,
+    title: statement.toUpperCase(),
     description: `A wiki snippet about ${statement}`,
     fields: [
       {
