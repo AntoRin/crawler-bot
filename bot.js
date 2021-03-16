@@ -2,6 +2,7 @@ const fetch = require("node-fetch");
 require("dotenv").config();
 const Discord = require("discord.js");
 const client = new Discord.Client();
+const EventEmitter = require("events");
 
 client.on("ready", () => {
   console.log("logged in as " + client.user.tag);
@@ -124,12 +125,24 @@ async function unsplash(statement, msg) {
 
 async function wiki(statement, msg) {
   statement = statement.trim();
+
+  const listener = new EventEmitter();
+
+  msg.channel
+    .send("Wait for a second while I ask my buddy Wiki")
+    .then(thisMessage => {
+      listener.on("Snippet Received", () => {
+        thisMessage.delete();
+      });
+    });
+
   let wikiRequest = await fetch(
     `https://wikisnippets.herokuapp.com/api/wikisnippet/${statement}`
   );
 
   let snippet = await wikiRequest.json();
-  console.log(snippet);
+  listener.emit("Snippet Received");
+
   let parsedSnippet =
     snippet.data.length > 1024
       ? snippet.data.substr(0, 1020) + "..."
@@ -137,7 +150,7 @@ async function wiki(statement, msg) {
 
   let imageURL =
     snippet.image === ""
-      ? "//www.dreamstime.com/no-image-available-icon-photo-camera-flat-vector-illustration-image132483097"
+      ? "//thumbs.dreamstime.com/z/no-image-available-icon-photo-camera-flat-vector-illustration-132483097.jpg"
       : snippet.image;
 
   if (snippet.status === "error")
